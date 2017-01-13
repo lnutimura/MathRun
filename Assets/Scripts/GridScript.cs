@@ -8,10 +8,12 @@ public class GridScript : MonoBehaviour
     public int gridColumns;
     public float skinWidth;
 
-    private Cell[,] gridMatrix;
-    private Cell lastCellSelected;
+    public Cell[,] gridMatrix;
+
     public int numOfCells;
     public int numOfSelectedCells;
+
+    private Cell lastCellSelected;
 
     void Start ()
     {
@@ -30,6 +32,7 @@ public class GridScript : MonoBehaviour
                 tmp.transform.SetParent(transform);
                 tmp.transform.localScale = new Vector3(1f - skinWidth, 1f - skinWidth, 1f);
                 tmp.transform.localPosition = new Vector3(i, j, 1f);
+                tmp.transform.name = "Cell (" + i + ", " + j + ")";
 
                 Cell cell = new Cell (tmp, tmp.transform.localPosition);
             

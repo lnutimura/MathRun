@@ -8,7 +8,6 @@ public class ChangeRect : MonoBehaviour {
 	private int oldNumberOfItems;
 	private bool didFirstIteration;
 
-	// Use this for initialization
 	void Start () {
 		oldNumberOfItems = 0;
 		didFirstIteration = false;
@@ -17,7 +16,6 @@ public class ChangeRect : MonoBehaviour {
 		rt = gridLayout.GetComponent<RectTransform>();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		if (didFirstIteration) {
 			CheckGridLayoutUpdate();
