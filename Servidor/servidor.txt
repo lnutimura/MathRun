@@ -1,8 +1,27 @@
 https://mathrun.000webhostapp.com
+
+C Panel
+
 https://br.000webhost.com/login-cpanel?from=panel
+user: raphasousa.jau@gmail.com
+senha: mathrun2017
 
 base de dados:
 
 nome: id334976_db_mathrun
 user: id334976_db_mathrun
 senha: db_mathrun
+
+--------------------------------------------------------------------------
+
+como usar o GIT
+
+cd C:\\Users\\Raphael\\Desktop\\Raphael\\UNESP\\6º\ Semestre\\Engenharia\ de\ Software\ II\\Trabalho\\MathRun\\MathRun
+
+git status
+
+git add .
+
+git commit -m "mensagem"
+
+git push
