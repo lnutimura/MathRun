@@ -31,6 +31,13 @@ public class Cell
         this.position = position;
     }
 
+    public void ResetCell () {
+        type = OperationType.Soma;
+        difficulty = 0;
+        question = "";
+        answer = 0f;
+    }
+
     public void SetCell (OperationType type, int difficulty, string question, float answer)
     {
         this.type = type;

@@ -6,9 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SelectCell : MonoBehaviour {
+    public Cell currentSelectedCell;
+
 	private float t;
 	private GridScript gridScript;
-	private Cell currentSelectedCell;
 
 	void Start () {
 		t = 0f;
@@ -50,7 +51,7 @@ public class SelectCell : MonoBehaviour {
 		}
 	}
 
-	void SaveCellInfo (Cell cell) {
+	public void SaveCellInfo (Cell cell) {
 		// Componentes de UI com informações de uma célula
 		InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
 		InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
@@ -88,7 +89,7 @@ public class SelectCell : MonoBehaviour {
 		}
 	}
 
-	void LoadCellInfo (Cell cell) {
+	public void LoadCellInfo (Cell cell) {
 		// Componentes de UI com informações de uma célula
 		Text selectedCell = GameObject.Find("SelectedCellText").GetComponent<Text>();
 		InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
