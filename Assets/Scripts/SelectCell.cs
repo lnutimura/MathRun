@@ -6,9 +6,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class SelectCell : MonoBehaviour {
+    public Cell currentSelectedCell;
+
 	private float t;
 	private GridScript gridScript;
-	private Cell currentSelectedCell;
 
 	void Start () {
 		t = 0f;
@@ -50,14 +51,12 @@ public class SelectCell : MonoBehaviour {
 		}
 	}
 
-	void SaveCellInfo (Cell cell) {
+	public void SaveCellInfo (Cell cell) {
 		// Componentes de UI com informações de uma célula
 		InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
 		InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
-		Toggle additionToggle = GameObject.Find("AdditionToggle").GetComponent<Toggle>();
-		Toggle subtractionToggle = GameObject.Find("SubtractionToggle").GetComponent<Toggle>();
-		Toggle multiplicationToggle = GameObject.Find("MultiplicationToggle").GetComponent<Toggle>();
-		Toggle divisionToggle = GameObject.Find("DivisionToggle").GetComponent<Toggle>();
+		InputField difficulty = GameObject.Find("DifficultyInput").GetComponent<InputField>();
+		Dropdown operation = GameObject.Find("Dropdown").GetComponent<Dropdown>();
 
 		float result;
 		if (!float.TryParse(answer.text, out result)) {
@@ -65,39 +64,44 @@ public class SelectCell : MonoBehaviour {
 			result = 0;
 		}
 
-		if (additionToggle.isOn) {
-			cell.SetCell(Cell.OperationType.Soma, 0, question.text, result);
-		} else if (subtractionToggle.isOn) {
-			cell.SetCell(Cell.OperationType.Subtracao, 0, question.text, result);
-		} else if (multiplicationToggle.isOn) {
-			cell.SetCell(Cell.OperationType.Multiplicacao, 0, question.text, result);
-		} else if (divisionToggle.isOn) {
-			cell.SetCell(Cell.OperationType.Divisao, 0, question.text, result);
+		int dif;
+		if (!int.TryParse(difficulty.text, out dif)) {
+			difficulty.text = "";
+			dif = 0;
+		}
+
+		switch (operation.value) {
+			case 0:
+				cell.SetCell(Cell.OperationType.Soma, dif, question.text, result);
+				break;
+			case 1:
+				cell.SetCell(Cell.OperationType.Subtracao, dif, question.text, result);
+				break;
+			case 2:
+				cell.SetCell(Cell.OperationType.Multiplicacao, dif, question.text, result);
+				break;
+			case 3:
+				cell.SetCell(Cell.OperationType.Divisao, dif, question.text, result);
+				break;
+			case 4:
+				cell.SetCell(Cell.OperationType.Mista, dif, question.text, result);
+				break;
 		}
 	}
 
-	void LoadCellInfo (Cell cell) {
+	public void LoadCellInfo (Cell cell) {
 		// Componentes de UI com informações de uma célula
 		Text selectedCell = GameObject.Find("SelectedCellText").GetComponent<Text>();
 		InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
 		InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
-		Toggle additionToggle = GameObject.Find("AdditionToggle").GetComponent<Toggle>();
-		Toggle subtractionToggle = GameObject.Find("SubtractionToggle").GetComponent<Toggle>();
-		Toggle multiplicationToggle = GameObject.Find("MultiplicationToggle").GetComponent<Toggle>();
-		Toggle divisionToggle = GameObject.Find("DivisionToggle").GetComponent<Toggle>();
+		InputField difficulty = GameObject.Find("DifficultyInput").GetComponent<InputField>();
+		Dropdown operation = GameObject.Find("Dropdown").GetComponent<Dropdown>();
 
 		selectedCell.text = "Célula (" + (int)cell.GetCellPosition().x + "," + (int)cell.GetCellPosition().y + ")";
 		question.text = cell.GetCellQuestion();
 		answer.text = string.IsNullOrEmpty(question.text) ? "" : cell.GetCellAnswer().ToString();
+		difficulty.text = string.IsNullOrEmpty(question.text) ? "" : cell.GetCellDifficulty().ToString();
 
-		if (cell.GetCellType() == Cell.OperationType.Soma) {
-			additionToggle.isOn = true;
-		} else if (cell.GetCellType() == Cell.OperationType.Subtracao) {
-			subtractionToggle.isOn = true;
-		} else if (cell.GetCellType() == Cell.OperationType.Multiplicacao) {
-			multiplicationToggle.isOn = true;
-		} else if (cell.GetCellType() == Cell.OperationType.Divisao) {
-			divisionToggle.isOn = true;
-		}
+		operation.value = (int)cell.GetCellType();
 	}
 }

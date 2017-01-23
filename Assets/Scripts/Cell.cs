@@ -9,7 +9,8 @@ public class Cell
         Soma,
         Subtracao,
         Multiplicacao,
-        Divisao
+        Divisao,
+        Mista
     }
 
     private bool selected;
@@ -28,6 +29,13 @@ public class Cell
 
         this.primitive = primitive;
         this.position = position;
+    }
+
+    public void ResetCell () {
+        type = OperationType.Soma;
+        difficulty = 0;
+        question = "";
+        answer = 0f;
     }
 
     public void SetCell (OperationType type, int difficulty, string question, float answer)
@@ -76,5 +84,10 @@ public class Cell
     public float GetCellAnswer ()
     {
         return answer;
+    }
+
+    public int GetCellDifficulty ()
+    {
+        return difficulty;
     }
 }
