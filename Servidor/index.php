@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?php
 
 ?>
@@ -22,7 +21,6 @@
 		<li><h5>Victor Santos de Moura Cesário</h5></li>
 	</ul>
 </body>
-=======
 <?php
 
 ?>
@@ -46,5 +44,4 @@
 		<li><h5>Victor Santos de Moura Cesário</h5></li>
 	</ul>
 </body>
->>>>>>> a2cd5d7a840f746daa0056febeaa10baf2f1dffe
 </html>
