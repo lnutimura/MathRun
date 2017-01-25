@@ -3,15 +3,23 @@
 
     $x = $_GET['x'];
     $y = $_GET['y'];
-    $pergunta = $_GET['pergunta'];
 
     //pega a ultima fase cadastrada
     $select1 = "SELECT id FROM fase ORDER BY id DESC LIMIT 1";
     $result1 = $conexao->prepare($select1);
     $result1->execute();
 
-    foreach($result1 as $pub) {
-        $fase = $pub['id'];
+    foreach($result1 as $res1) {
+        $fase = $res1['id'];
+    }
+
+    //pega a ultima pergunta cadastrada
+    $select2 = "SELECT id FROM pergunta ORDER BY id DESC LIMIT 1";
+    $result2 = $conexao->prepare($select2);
+    $result2->execute();
+
+    foreach($result2 as $res2) {
+        $pergunta = $res2['id'];
     }
 
     $select = "INSERT INTO casas (id_fase, x, y, id_pergunta) VALUES (:fase, :x, :y, :pergunta)";
