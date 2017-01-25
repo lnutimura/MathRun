@@ -72,10 +72,17 @@ public class LoginManager : MonoBehaviour {
     IEnumerator ValidaLogin(WWW www, string login, string senha)
     {
         yield return www;
-        string resultado = null;
+        bool resultado = false;
+        int dadosPorLinha = 0;
 
         if (www.error == null)
         {
+            ArrayList dados = MenuManager.GetDadosWWW(www, out resultado, out dadosPorLinha);
+            id = dados[0].ToString();
+            is_prof = dados[1].ToString();
+            Debug.Log(dadosPorLinha);
+
+            /*
             //tratamento da string HTML recebida
             string[] linhas = www.text.Split('&'); //resultado & dados
             foreach (string linha in linhas)
@@ -91,9 +98,10 @@ public class LoginManager : MonoBehaviour {
                 }
                 else resultado = linha; //a primeira parte indica sucesso (1) ou fracasso (0)
             }
+            */
 
             //sucesso
-            if (resultado == "1")
+            if (resultado == true)
             {
                 //salva dados do player
                 if (rememberData.isOn) SalvaPlayerPrefs(1, id, login, senha, is_prof);
