@@ -14,7 +14,7 @@
     }
 
     //pega a ultima pergunta cadastrada
-    $select2 = "SELECT id FROM pergunta ORDER BY id DESC LIMIT 1";
+    $select2 = "SELECT id FROM perguntas ORDER BY id DESC LIMIT 1";
     $result2 = $conexao->prepare($select2);
     $result2->execute();
 
