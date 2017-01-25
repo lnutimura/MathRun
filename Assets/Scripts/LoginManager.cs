@@ -74,13 +74,16 @@ public class LoginManager : MonoBehaviour {
         yield return www;
         bool resultado = false;
         int dadosPorLinha = 0;
+        int numLinhas = 0;
 
         if (www.error == null)
         {
-            ArrayList dados = MenuManager.GetDadosWWW(www, out resultado, out dadosPorLinha);
+            ArrayList dados = MenuManager.GetDadosWWW(www, out resultado, out dadosPorLinha, out numLinhas);
             id = dados[0].ToString();
             is_prof = dados[1].ToString();
-            Debug.Log(dadosPorLinha);
+
+            //Debug.Log(dadosPorLinha);
+            //Debug.Log(numLinhas);
 
             /*
             //tratamento da string HTML recebida

@@ -88,7 +88,7 @@ public class MenuManager : MonoBehaviour {
         messageText.CrossFadeAlpha(0f, 2f, false);
     }
 
-    public static ArrayList GetDadosWWW(WWW www, out bool sucesso, out int numDadosLinha)
+    public static ArrayList GetDadosWWW(WWW www, out bool sucesso, out int numDadosLinha, out int numLinhas)
     {
         ArrayList dados = new ArrayList();
         string resultado = "";
@@ -117,6 +117,7 @@ public class MenuManager : MonoBehaviour {
         if (resultado == "1") sucesso = true;
         else sucesso = false;
         numDadosLinha = cont;
+        numLinhas = dados.Count / numDadosLinha;
         return dados;
     }
 }
