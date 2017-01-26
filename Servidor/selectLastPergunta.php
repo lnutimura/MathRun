@@ -1,7 +1,7 @@
 <?php
     include("conexao.php");
 
-    $select = "SELECT * FROM pergunta ORDER BY id DESC LIMIT 1";
+    $select = "SELECT * FROM perguntas ORDER BY id DESC LIMIT 1";
     
     $result = $conexao->prepare($select);
     $result->execute();
