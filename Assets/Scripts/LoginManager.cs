@@ -108,7 +108,7 @@ public class LoginManager : MonoBehaviour {
             {
                 //salva dados do player
                 if (rememberData.isOn) SalvaPlayerPrefs(1, id, login, senha, is_prof);
-                else SalvaPlayerPrefs(0, "", "", "", "");
+                else SalvaPlayerPrefs(0, id, "", "", "");
 
                 //carrega o jogo
                 MenuManager.FeedBackOk(messageText, "Login realizado com sucesso! \n Carregando...");
