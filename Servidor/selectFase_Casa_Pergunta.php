@@ -11,6 +11,7 @@
     $count = $result->rowCount(); 
 
     if($count > 0) {
+        echo 1;
         foreach($result as $casas) {
             $id_casa = $casas['id'];
             $x = $casas['x'];
@@ -25,7 +26,6 @@
             $count1 = $result1->rowCount(); 
 
             if($count1 > 0) {
-                echo 1;
                 foreach($result1 as $pergunta) {
                     $questao = $pergunta['questao'];
                     $resposta = $pergunta['resposta'];
