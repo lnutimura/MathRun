@@ -1,22 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridScript : MonoBehaviour {
+    // Dimensão da matriz e espaço entre células
     public int gridLines;
     public int gridColumns;
     public float skinWidth;
-
+    // Matriz e vetor de células selecionadas (útil para controle de rollback)
     public Cell[,] gridMatrix;
     public Cell[] selectedCells;
-
+    // Número total de células e número de células selecionadas (útil para atribuir as cores para as células
+    // dependendo da quantidade selecionada)
     public int numOfCells;
     public int numOfSelectedCells;
-
+    // Última célula selecionada e instância de SelectCell, para verificar os caminhos viáveis para selecionar, etc
     private Cell lastSelectedCell;
     private SelectCell selectCellScript;
+    // Referência dos InputFields para proibir o Rollback enquanto o usuário está apagando um texto
+    private InputField levelInput;
+    private InputField questionInput;
+    private InputField answerInput;
+    private InputField difficultyInput;
 
     void Start () {
+        levelInput = GameObject.Find("LevelNameInput").GetComponent<InputField>();
+        questionInput = GameObject.Find("QuestionInput").GetComponent<InputField>();
+        answerInput = GameObject.Find("AnswerInput").GetComponent<InputField>();
+        difficultyInput = GameObject.Find("DifficultyInput").GetComponent<InputField>();
+
         lastSelectedCell = null;
         selectCellScript = GameObject.Find("Game Manager").GetComponent<SelectCell>();
 
@@ -83,7 +96,8 @@ public class GridScript : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Backspace)) {
+        if (Input.GetKeyDown(KeyCode.Backspace) && !levelInput.isFocused && !questionInput.isFocused &&
+            !answerInput.isFocused && !difficultyInput.isFocused) {
             Rollback();
         }
     }
