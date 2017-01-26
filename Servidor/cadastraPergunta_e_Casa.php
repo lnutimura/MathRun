@@ -21,8 +21,6 @@
     $result->execute();
 
     if ($result) {
-        echo 1;
-
         //pega a ultima pergunta cadastrada acima
         $select2 = "SELECT id FROM perguntas WHERE questao = :questao AND resposta = :resposta AND dificuldade = :dificuldade AND tipo = :tipo AND autor = :autor";
         $result2 = $conexao->prepare($select2);
