@@ -58,7 +58,7 @@ public class CreateLevelScript : MonoBehaviour {
 			int difficulty = m_gridScript.selectedCells[i].GetCellDifficulty();
 			int type = (int) m_gridScript.selectedCells[i].GetCellType();
 
-            wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y));
+            wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y + "&fase=" + WWW.EscapeURL(m_levelName.text)));
         }
 
         StartCoroutine(ISaveWWWList(wwwList));
@@ -142,20 +142,32 @@ public class CreateLevelScript : MonoBehaviour {
     }
 
     IEnumerator ISaveWWWList(List<WWW> wwwList) {
+        List<WWW> wwwList2 = new List<WWW>();
         for (int i = 0; i < wwwList.Count; i++) {
+
             yield return wwwList[i];
 
-            if (wwwList[i].error == null) {
-                if (wwwList[i].text == "1") {
-                    Debug.Log("Salvou os dados com sucesso!");
-                } else {
-                    Debug.Log("Erro ao salvar.");
+            if (wwwList[i].error == null)
+            {
+                if (wwwList[i].text == "1")
+                {
+                    Debug.Log("Salvou os dados com sucesso! " + wwwList[i].url);
                 }
-            } else {
-                Debug.Log("Erro de conexão com o servidor.");
+                else
+                {
+                    Debug.Log("Erro ao salvar. " + wwwList[i].url);
+                }
+            }
+            else
+            {
+                Debug.Log("Erro de conexão com o servidor. " + wwwList[i].url);
+                wwwList2.Add(new WWW(wwwList[i].url));
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
         }
+
+        if (wwwList2.Count > 0) StartCoroutine(ISaveWWWList(wwwList2));
+        else Debug.Log("Fase salva com sucesso!");
     }
 }

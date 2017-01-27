@@ -67,6 +67,7 @@
                 $result->bindParam(':y', $y, PDO::PARAM_STR);
                 $result->bindParam(':pergunta', $pergunta, PDO::PARAM_STR);
                 $result->execute();
+                
                 if ($result) {
                     echo 1;
                 }else{

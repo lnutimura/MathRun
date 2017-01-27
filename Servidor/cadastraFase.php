@@ -1,6 +1,8 @@
 <?php
     include("conexao.php");
 
+    $conexao->beginTransaction();
+
     $nome = $_GET['nome'];
     $autor = $_GET['autor'];
     $data1 = $_GET['data'];
@@ -21,4 +23,6 @@
     }else{
         echo 0;
     }
+
+    $conexao->commit();
 ?>
