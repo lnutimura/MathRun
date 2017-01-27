@@ -10,6 +10,8 @@
     $x = $_GET['x'];
     $y = $_GET['y'];
 
+    $nome_fase = $_GET['fase'];
+
     //salva no banco a pergunta
     $select = "INSERT INTO perguntas (questao, resposta, dificuldade, tipo, autor) VALUES (:questao, :resposta, :dificuldade, :tipo, :autor)";
     $result = $conexao->prepare($select);
@@ -35,34 +37,46 @@
             foreach($result2 as $res2) {
                 $pergunta = $res2['id'];
             }
+            //echo $pergunta;
 
-            //pega a ultima fase cadastrada do autor
-            $select1 = "SELECT id FROM fase WHERE autor = :autor ORDER BY id DESC LIMIT 1";
-            $result1 = $conexao->prepare($select1);
-            $result1->bindParam(':autor', $autor, PDO::PARAM_STR);
-            $result1->execute();
+            //$redirect = 'cadastraCasas.php?x='.$x.'&y='.$y.'&pergunta='.$pergunta.'&fase='.$nome_fase.'&autor='.$autor;
+		    //header("location:$redirect");
+           
+           //pega a ultima fase cadastrada do autor
+            $select1 = "SELECT id FROM fase WHERE nome = :nome_fase AND autor = :autor ORDER BY id DESC LIMIT 1";
+            $resultado = $conexao->prepare($select1);
+            $resultado->bindParam(':nome_fase', $nome_fase, PDO::PARAM_STR);
+            $resultado->bindParam(':autor', $autor, PDO::PARAM_STR);
+            $resultado->execute();
+            $count = $resultado->rowCount(); 
+            //echo 1;
 
-            if ($result1) {
-                foreach($result1 as $res1) {
+            //if ($count > 0) {
+                //echo 2;
+                
+                foreach($resultado as $res1) {
                     $fase = $res1['id'];
                 }
+                //echo $fase;
+                
                 //cadastra a casa
-                $select3 = "INSERT INTO casas (id_fase, x, y, id_pergunta) VALUES (:fase, :x, :y, :pergunta)";
-                $result3 = $conexao->prepare($select3);
-                $result3->bindParam(':fase', $fase, PDO::PARAM_STR); 
-                $result3->bindParam(':x', $x, PDO::PARAM_STR);
-                $result3->bindParam(':y', $y, PDO::PARAM_STR);
-                $result3->bindParam(':pergunta', $pergunta, PDO::PARAM_STR);
-                $result3->execute();
-                if ($result3) {
+                $select = "INSERT INTO casas (id_fase, x, y, id_pergunta) VALUES (:fase, :x, :y, :pergunta)";
+                $result = $conexao->prepare($select);
+                $result->bindParam(':fase', $fase, PDO::PARAM_STR); 
+                $result->bindParam(':x', $x, PDO::PARAM_STR);
+                $result->bindParam(':y', $y, PDO::PARAM_STR);
+                $result->bindParam(':pergunta', $pergunta, PDO::PARAM_STR);
+                $result->execute();
+                if ($result) {
                     echo 1;
                 }else{
                     echo 0;
                 } 
-
-            }else{
-                echo 0;
-            }
+                
+            //}else{
+            //    $echo 0;
+            //}
+	            
         }else{
             echo 0;
         }
