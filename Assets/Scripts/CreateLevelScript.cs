@@ -18,8 +18,9 @@ public class CreateLevelScript : MonoBehaviour {
 	private GridScript m_gridScript;
     private SelectCell m_selectCellScript;
 
+
 	void Start () {
-		m_levelUrl = "https://mathrun.000webhostapp.com/cadastraFase.php";
+        m_levelUrl = "https://mathrun.000webhostapp.com/cadastraFase.php";
 		m_cellUrl = "https://mathrun.000webhostapp.com/cadastraPergunta_e_Casa.php";
         m_selectLevelsUrl = "https://mathrun.000webhostapp.com/selectFases.php";
         m_selectCellsUrl = "https://mathrun.000webhostapp.com/selectFase_Casa_Pergunta.php";
@@ -48,18 +49,18 @@ public class CreateLevelScript : MonoBehaviour {
 		int id = int.Parse(PlayerPrefs.GetString("rememberId"));
         wwwList.Add(new WWW(m_levelUrl + "?nome=" + WWW.EscapeURL(m_levelName.text) + "&autor=" + id + "&data=" + (dy + "-" + mn + "-" + yy)));
 
-		for (int j = 0; j < m_gridScript.gridLines; ++j) {
-			for (int i = 0; i < m_gridScript.gridColumns; ++i) {
-				if (m_gridScript.gridMatrix[i, j].GetCellStatus()) {
-					string question = m_gridScript.gridMatrix[i, j].GetCellQuestion();
-					float answer = m_gridScript.gridMatrix[i, j].GetCellAnswer();
-					int difficulty = m_gridScript.gridMatrix[i, j].GetCellDifficulty();
-					int type = (int) m_gridScript.gridMatrix[i, j].GetCellType();
+        for (int i = 0; i < m_gridScript.numOfSelectedCells; ++i) {
+            int x = (int) m_gridScript.selectedCells[i].GetCellPosition().x;
+            int y = (int) m_gridScript.selectedCells[i].GetCellPosition().y;
 
-                    wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + i + "&y=" + j));
-				}
-			}
-		}
+            string question = m_gridScript.selectedCells[i].GetCellQuestion();
+			float answer = m_gridScript.selectedCells[i].GetCellAnswer();
+			int difficulty = m_gridScript.selectedCells[i].GetCellDifficulty();
+			int type = (int) m_gridScript.selectedCells[i].GetCellType();
+
+            wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y));
+        }
+
         StartCoroutine(ISaveWWWList(wwwList));
 	}
 
@@ -123,6 +124,7 @@ public class CreateLevelScript : MonoBehaviour {
 
         if (www.error == null) {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
+            
             for (int i = 0; i < (dataPerLine * numOfLines); i += 4) {
                 GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedLevel"));
 
@@ -152,6 +154,8 @@ public class CreateLevelScript : MonoBehaviour {
             } else {
                 Debug.Log("Erro de conexão com o servidor.");
             }
+
+            yield return new WaitForSeconds(1f);
         }
     }
 }

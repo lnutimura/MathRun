@@ -117,7 +117,13 @@ public class MenuManager : MonoBehaviour {
         if (resultado == "1") sucesso = true;
         else sucesso = false;
         numDadosLinha = cont;
-        numLinhas = dados.Count / numDadosLinha;
+
+        try {
+            numLinhas = dados.Count / numDadosLinha;
+        } catch {
+            numLinhas = 0;
+            Debug.Log("Divisão por zero no cálculo de linhas. Assumindo que nenhum dado foi retornado.");
+        }
         return dados;
     }
 }
