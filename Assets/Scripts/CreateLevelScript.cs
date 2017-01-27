@@ -5,29 +5,30 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CreateLevelScript : MonoBehaviour {
-	private string m_levelUrl;
-	//private string m_questionUrl;
-	private string m_cellUrl;
-    private List<WWW> wwwList;
-	//private string m_lastLevelUrl;
-	//private string m_lastQuestionUrl;
+    public GameObject LoadLevelPanel;
 
+    // Base das URLs para inserir e consultar dados no BD
+	private string m_levelUrl;
+	private string m_cellUrl;
+    private string m_selectLevelsUrl;
+    private string m_selectCellsUrl;
+    // Lista de URLs completas para inserir dados no BD
+    private List<WWW> wwwList;
 	private InputField m_levelName;
 	private GridScript m_gridScript;
     private SelectCell m_selectCellScript;
 
 	void Start () {
 		m_levelUrl = "https://mathrun.000webhostapp.com/cadastraFase.php";
-		//m_questionUrl = "https://mathrun.000webhostapp.com/cadastraPergunta.php";
 		m_cellUrl = "https://mathrun.000webhostapp.com/cadastraPergunta_e_Casa.php";
-
-        //m_lastLevelUrl = "https://mathrun.000webhostapp.com/selectLastFase.php";
-        //m_lastQuestionUrl = "https://mathrun.000webhostapp.com/selectLastPergunta.php";
+        m_selectLevelsUrl = "https://mathrun.000webhostapp.com/selectFases.php";
+        m_selectCellsUrl = "https://mathrun.000webhostapp.com/selectFase_Casa_Pergunta.php";
 
         m_selectCellScript = GetComponent<SelectCell>();
         m_gridScript = GameObject.Find("Grid").GetComponent<GridScript>();
 		m_levelName = GameObject.Find("LevelNameInput").GetComponent<InputField>();
 	}
+
 	public void SaveLevel () {
 		if (m_levelName.text == "") {
 			Debug.Log("Erro: tentou salvar um nível sem nome.");
@@ -46,10 +47,6 @@ public class CreateLevelScript : MonoBehaviour {
 
 		int id = int.Parse(PlayerPrefs.GetString("rememberId"));
         wwwList.Add(new WWW(m_levelUrl + "?nome=" + WWW.EscapeURL(m_levelName.text) + "&autor=" + id + "&data=" + (dy + "-" + mn + "-" + yy)));
-		//WWW www = new WWW(m_levelUrl + "?nome=" + WWW.EscapeURL(m_levelName.text) + "&autor=" + id + "&data=" + (dy + "-" + mn + "-" + yy));
-		//StartCoroutine(ISaveData(www));
-		////www = new WWW(m_lastLevelUrl);
-		////StartCoroutine(IGetId(www));
 
 		for (int j = 0; j < m_gridScript.gridLines; ++j) {
 			for (int i = 0; i < m_gridScript.gridColumns; ++i) {
@@ -59,61 +56,86 @@ public class CreateLevelScript : MonoBehaviour {
 					int difficulty = m_gridScript.gridMatrix[i, j].GetCellDifficulty();
 					int type = (int) m_gridScript.gridMatrix[i, j].GetCellType();
 
-                    //wwwList.Add(new WWW(m_questionUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id));
                     wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + i + "&y=" + j));
-					//www = new WWW(m_questionUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id);
-					//StartCoroutine(ISaveData(www));
-					////www = new WWW(m_lastQuestionUrl);
-					////StartCoroutine(IGetId(www));
-					//www = new WWW(m_cellUrl + "?x=" + i + "&y=" + j);
-					//StartCoroutine(ISaveData(www));
 				}
 			}
 		}
-
         StartCoroutine(ISaveWWWList(wwwList));
 	}
 
-	/*
-	IEnumerator IGetId(WWW www, int tipo = 0) {
-		yield return www;
+    public void LoadLevel (string id) {
+        LoadLevelPanel.SetActive(false);
 
-		bool resultado;
-		int dadosPorLinha;
-		int numLinhas;
+        m_gridScript.ResetAllCells();
 
-		if (www.error == null)
-        {
-            ArrayList dados = MenuManager.GetDadosWWW(www, out resultado, out dadosPorLinha, out numLinhas);
-            if (tipo == 0) {
-				// Fase
-				lastSavedLevelId = int.Parse(dados[0].ToString());
-			} else if (tipo == 1) {
-				// Pergunta
-				lastSavedQuestionId = int.Parse(dados[0].ToString());
-			}
-		}
-	}
-	*/
+        WWW www = new WWW(m_selectCellsUrl + "?fase=" + int.Parse(id));
+        StartCoroutine(ILoadLevel(www));
+    }
 
-	IEnumerator ISaveData(WWW www)
-    {
+    IEnumerator ILoadLevel (WWW www) {
         yield return www;
 
-        if (www.error == null)
-        {
-            if (www.text == "1")
-            {
-                Debug.Log("Salvou os dados com sucesso!");
-            }
-            else
-            {
-                Debug.Log("Erro ao salvar.");
+        bool result;
+        int numOfLines = 0;
+        int dataPerLine = 0;
+
+        if (www.error == null) {
+            ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
+
+            for (int i = 0; i < (dataPerLine * numOfLines); i += 9) {
+                int x = int.Parse(data[i + 1].ToString());
+                int y = int.Parse(data[i + 2].ToString());
+
+                m_gridScript.gridMatrix[x, y].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.red;
+                m_gridScript.gridMatrix[x, y].SetCell((Cell.OperationType)int.Parse(data[i + 7].ToString()), int.Parse(data[i + 6].ToString()), data[i + 4].ToString(), float.Parse(data[i + 5].ToString()));
+                m_gridScript.gridMatrix[x, y].SetCellStatus(true);
+
+                m_gridScript.selectedCells[m_gridScript.numOfSelectedCells] = m_gridScript.gridMatrix[x, y];
+                ++m_gridScript.numOfSelectedCells;
+                m_gridScript.lastSelectedCell = m_gridScript.gridMatrix[x, y];
+
+                m_selectCellScript.currentSelectedCell = m_gridScript.gridMatrix[x, y];
             }
         }
-        else
-        {
-            Debug.Log("Erro de conexão com o servidor.");
+
+        LoadLevelPanel.SetActive(false);
+        m_gridScript.SetPlayable(true);
+    }
+
+    public void RetrieveLevels () {
+        LoadLevelPanel.SetActive(true);
+        m_gridScript.SetPlayable(false);
+
+        foreach (Transform child in GameObject.Find("Level Grid Layout").transform) {
+            Destroy(child.gameObject);
+        }
+
+        WWW www = new WWW(m_selectLevelsUrl);
+        StartCoroutine(IRetrieveLevels(www));
+    }
+
+    IEnumerator IRetrieveLevels (WWW www) {
+        yield return www;
+
+        bool result;
+        int numOfLines = 0;
+        int dataPerLine = 0;
+
+        if (www.error == null) {
+            ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
+            for (int i = 0; i < (dataPerLine * numOfLines); i += 4) {
+                GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedLevel"));
+
+                go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
+                go.transform.localScale = new Vector3(1f, 1f, 1f);
+                go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
+                go.GetComponent<Button>().onClick.AddListener(delegate () { LoadLevel(go.transform.GetChild(0).GetComponent<Text>().text); });
+
+                go.name = data[i] + ":" + data[i + 1].ToString() + ":" + data[i + 3].ToString();
+                go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
+                go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
+                go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+            }
         }
     }
 

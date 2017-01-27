@@ -16,7 +16,7 @@ public class GridScript : MonoBehaviour {
     public int numOfCells;
     public int numOfSelectedCells;
     // Última célula selecionada e instância de SelectCell, para verificar os caminhos viáveis para selecionar, etc
-    private Cell lastSelectedCell;
+    public Cell lastSelectedCell;
     private SelectCell selectCellScript;
     // Referência dos InputFields para proibir o Rollback enquanto o usuário está apagando um texto
     private InputField levelInput;
@@ -24,7 +24,10 @@ public class GridScript : MonoBehaviour {
     private InputField answerInput;
     private InputField difficultyInput;
 
+    private bool isPlayable;
     void Start () {
+        isPlayable = true;
+
         levelInput = GameObject.Find("LevelNameInput").GetComponent<InputField>();
         questionInput = GameObject.Find("QuestionInput").GetComponent<InputField>();
         answerInput = GameObject.Find("AnswerInput").GetComponent<InputField>();
@@ -56,50 +59,59 @@ public class GridScript : MonoBehaviour {
     }
 
     void Update () {
-        if (Input.GetMouseButtonDown(0)) {
-            Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+        if (isPlayable) {
+            if (Input.GetMouseButtonDown(0)) {
+                Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
 
-            if (Physics.Raycast(camRay, out hit)) {
-                bool isValid = false;
-                int tmpX = (int) hit.transform.localPosition.x;
-                int tmpY = (int) hit.transform.localPosition.y;
+                if (Physics.Raycast(camRay, out hit)) {
+                    bool isValid = false;
+                    int tmpX = (int)hit.transform.localPosition.x;
+                    int tmpY = (int)hit.transform.localPosition.y;
 
-                if (!gridMatrix[tmpX, tmpY].GetCellStatus()) {
-                    if (lastSelectedCell == null) {
-                        gridMatrix[tmpX, tmpY].SetCellStatus(true);
-                        gridMatrix[tmpX, tmpY].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.blue, (numOfSelectedCells * 1f) / numOfCells);
-                        isValid = true;
-                    } else {
-                        int diffX, diffY;
-
-                        diffX = (int) Mathf.Abs(tmpX - lastSelectedCell.GetCellPosition().x);
-                        diffY = (int) Mathf.Abs(tmpY - lastSelectedCell.GetCellPosition().y);
-
-                        if (((diffX == 1 && diffY == 0) || (diffX == 0 && diffY == 1)) && Check(gridMatrix[tmpX, tmpY])) {
-                          
+                    if (!gridMatrix[tmpX, tmpY].GetCellStatus()) {
+                        if (lastSelectedCell == null) {
                             gridMatrix[tmpX, tmpY].SetCellStatus(true);
                             gridMatrix[tmpX, tmpY].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.blue, (numOfSelectedCells * 1f) / numOfCells);
                             isValid = true;
+                        } else {
+                            int diffX, diffY;
+
+                            diffX = (int)Mathf.Abs(tmpX - lastSelectedCell.GetCellPosition().x);
+                            diffY = (int)Mathf.Abs(tmpY - lastSelectedCell.GetCellPosition().y);
+
+                            if (((diffX == 1 && diffY == 0) || (diffX == 0 && diffY == 1)) && Check(gridMatrix[tmpX, tmpY])) {
+
+                                gridMatrix[tmpX, tmpY].SetCellStatus(true);
+                                gridMatrix[tmpX, tmpY].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.Lerp(Color.red, Color.blue, (numOfSelectedCells * 1f) / numOfCells);
+                                isValid = true;
+                            }
                         }
-                    }
 
-                    if (isValid && lastSelectedCell != gridMatrix[tmpX, tmpY]) {
-                        ClearGrid();
-                        DrawPossiblePaths(tmpX, tmpY);
-                        selectedCells[numOfSelectedCells] = gridMatrix[tmpX, tmpY];
+                        if (isValid && lastSelectedCell != gridMatrix[tmpX, tmpY]) {
+                            ClearGrid();
+                            DrawPossiblePaths(tmpX, tmpY);
+                            selectedCells[numOfSelectedCells] = gridMatrix[tmpX, tmpY];
 
-                        ++numOfSelectedCells;
-                        lastSelectedCell = gridMatrix[tmpX, tmpY];
+                            ++numOfSelectedCells;
+                            lastSelectedCell = gridMatrix[tmpX, tmpY];
+                        }
                     }
                 }
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.Backspace) && !levelInput.isFocused && !questionInput.isFocused &&
-            !answerInput.isFocused && !difficultyInput.isFocused) {
-            Rollback();
+            if (Input.GetKeyDown(KeyCode.Backspace) && CheckInputFocuses()) {
+                Rollback();
+            }
         }
+    }
+
+    public void SetPlayable (bool status) {
+        isPlayable = status;
+    }
+
+    public bool CheckInputFocuses () {
+        return (!levelInput.isFocused && !questionInput.isFocused && !answerInput.isFocused && !difficultyInput.isFocused);
     }
 
     public void Rollback () {
@@ -145,6 +157,8 @@ public class GridScript : MonoBehaviour {
         }
     }
 
+
+    // Esse ClearGrid só deixa as células em branco. É uma sub-rotina usada no roll back e em outros trechos do código
     public void ClearGrid () {
         for (int j = 0; j < gridLines; j++) {
             for (int i = 0; i < gridColumns; i++) {
@@ -152,6 +166,13 @@ public class GridScript : MonoBehaviour {
                     gridMatrix[i, j].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.white;
                 }
             }
+        }
+    }
+
+    public void ResetAllCells () {
+        int aux = numOfSelectedCells;
+        for (int i = 0; i < aux; ++i) {
+            Rollback();
         }
     }
 
