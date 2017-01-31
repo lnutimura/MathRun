@@ -84,6 +84,7 @@ public class CreateLevelScript : MonoBehaviour {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
 
             for (int i = 0; i < (dataPerLine * numOfLines); i += 9) {
+                Debug.Log(i + " dif- " + data[i + 6].ToString());
                 int x = int.Parse(data[i + 1].ToString());
                 int y = int.Parse(data[i + 2].ToString());
 
@@ -92,10 +93,10 @@ public class CreateLevelScript : MonoBehaviour {
                 m_gridScript.gridMatrix[x, y].SetCellStatus(true);
 
                 m_gridScript.selectedCells[m_gridScript.numOfSelectedCells] = m_gridScript.gridMatrix[x, y];
-                ++m_gridScript.numOfSelectedCells;
                 m_gridScript.lastSelectedCell = m_gridScript.gridMatrix[x, y];
-
                 m_selectCellScript.currentSelectedCell = m_gridScript.gridMatrix[x, y];
+                m_selectCellScript.LoadCellInfo(m_gridScript.gridMatrix[x, y]);
+                ++m_gridScript.numOfSelectedCells;
             }
         }
 

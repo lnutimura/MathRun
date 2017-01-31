@@ -4,7 +4,7 @@
     $usuario = $_GET['usuario'];
     $fase = $_GET['fase'];
     $pergunta = $_GET['pergunta'];
-    $resposta = $_GET['resposta'];
+    $resposta = $_GET['resposta'];	//usar 2.5 e nao 2,5
     $acertou = $_GET['acertou'];
     $data1 = $_GET['data'];
 
