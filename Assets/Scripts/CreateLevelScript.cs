@@ -51,7 +51,7 @@ public class CreateLevelScript : MonoBehaviour {
     public void SaveLevel () {
 		if (m_levelName.text == "") {
 			Debug.Log("Erro: tentou salvar um nível sem nome.");
-            FeedBackMensagem("Erro: tentou salvar um nível sem nome.");
+            FeedBackMensagem("Erro: Digite o nome do nivel antes de salvar.");
 			return;
 		}
 
@@ -76,6 +76,13 @@ public class CreateLevelScript : MonoBehaviour {
 			float answer = m_gridScript.selectedCells[i].GetCellAnswer();
 			int difficulty = m_gridScript.selectedCells[i].GetCellDifficulty();
 			int type = (int) m_gridScript.selectedCells[i].GetCellType();
+
+            if (question == "")
+            {
+                FeedBackMensagem("Erro: Você se esqueceu de inserir alguma questão.");
+                wwwList.Clear();
+                return;
+            }
 
             wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y + "&ordem=" + i + "&fase=" + WWW.EscapeURL(m_levelName.text)));
         }

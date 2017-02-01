@@ -69,6 +69,8 @@ public class SelectCell : MonoBehaviour {
 			difficulty.text = "";
 			dif = 0;
 		}
+        if (dif < 1) dif = 1;
+        else if (dif > 10) dif = 10;
 
 		switch (operation.value) {
 			case 0:
