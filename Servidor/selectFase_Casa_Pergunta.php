@@ -3,7 +3,7 @@
 
     $fase = $_GET['fase'];
 
-    $select = "SELECT * FROM casas WHERE id_fase=:fase ORDER BY id";
+    $select = "SELECT * FROM casas WHERE id_fase=:fase ORDER BY ordem";
 
     $result = $conexao->prepare($select);
     $result->bindParam(':fase', $fase, PDO::PARAM_STR); 
@@ -16,6 +16,7 @@
             $id_casa = $casas['id'];
             $x = $casas['x'];
             $y = $casas['y'];
+            $ordem = $casas['ordem'];
             $id_pergunta = $casas['id_pergunta'];
 
             $select1 = "SELECT * FROM perguntas WHERE id=:id_pergunta";
@@ -33,7 +34,7 @@
                     $tipo = $pergunta['tipo'];
                     $autor = $pergunta['autor'];
 
-                    echo '&id='.$id_casa.'#'.$x.'#'.$y.'#'.$id_pergunta.'#'.$questao.'#'.$resposta.'#'.$dificuldade.'#'.$tipo.'#'.$autor;
+                    echo '&id='.$id_casa.'#'.$x.'#'.$y.'#'.$id_pergunta.'#'.$questao.'#'.$resposta.'#'.$dificuldade.'#'.$tipo.'#'.$autor.'#'.$ordem;
                 }
             }
             else{

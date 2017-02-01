@@ -9,6 +9,7 @@
 
     $x = $_GET['x'];
     $y = $_GET['y'];
+    $ordem = $_GET['ordem']; 
 
     $nome_fase = $_GET['fase'];
 
@@ -24,7 +25,7 @@
 
     if ($result) {
         //pega a ultima pergunta cadastrada acima
-        $select2 = "SELECT id FROM perguntas WHERE questao = :questao AND resposta = :resposta AND dificuldade = :dificuldade AND tipo = :tipo AND autor = :autor";
+        $select2 = "SELECT id FROM perguntas WHERE questao = :questao AND resposta = :resposta AND dificuldade = :dificuldade AND tipo = :tipo AND autor = :autor ORDER BY id DESC LIMIT 1";
         $result2 = $conexao->prepare($select2);
         $result2->bindParam(':questao', $questao, PDO::PARAM_STR); 
         $result2->bindParam(':resposta', $resposta, PDO::PARAM_STR);
@@ -37,10 +38,6 @@
             foreach($result2 as $res2) {
                 $pergunta = $res2['id'];
             }
-            //echo $pergunta;
-
-            //$redirect = 'cadastraCasas.php?x='.$x.'&y='.$y.'&pergunta='.$pergunta.'&fase='.$nome_fase.'&autor='.$autor;
-		    //header("location:$redirect");
            
            //pega a ultima fase cadastrada do autor
             $select1 = "SELECT id FROM fase WHERE nome = :nome_fase AND autor = :autor ORDER BY id DESC LIMIT 1";
@@ -60,11 +57,12 @@
                 //echo $fase;
                 
                 //cadastra a casa
-                $select = "INSERT INTO casas (id_fase, x, y, id_pergunta) VALUES (:fase, :x, :y, :pergunta)";
+                $select = "INSERT INTO casas (id_fase, x, y, ordem, id_pergunta) VALUES (:fase, :x, :y, :ordem, :pergunta)";
                 $result = $conexao->prepare($select);
                 $result->bindParam(':fase', $fase, PDO::PARAM_STR); 
                 $result->bindParam(':x', $x, PDO::PARAM_STR);
                 $result->bindParam(':y', $y, PDO::PARAM_STR);
+                $result->bindParam(':ordem', $ordem, PDO::PARAM_STR);
                 $result->bindParam(':pergunta', $pergunta, PDO::PARAM_STR);
                 $result->execute();
                 

@@ -58,7 +58,7 @@ public class CreateLevelScript : MonoBehaviour {
 			int difficulty = m_gridScript.selectedCells[i].GetCellDifficulty();
 			int type = (int) m_gridScript.selectedCells[i].GetCellType();
 
-            wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y + "&fase=" + WWW.EscapeURL(m_levelName.text)));
+            wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y + "&ordem=" + i + "&fase=" + WWW.EscapeURL(m_levelName.text)));
         }
 
         StartCoroutine(ISaveWWWList(wwwList));
@@ -83,8 +83,8 @@ public class CreateLevelScript : MonoBehaviour {
         if (www.error == null) {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
 
-            for (int i = 0; i < (dataPerLine * numOfLines); i += 9) {
-                Debug.Log(i + " dif- " + data[i + 6].ToString());
+            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
+                Debug.Log(i + " ordem- " + data[i + 9].ToString());
                 int x = int.Parse(data[i + 1].ToString());
                 int y = int.Parse(data[i + 2].ToString());
 
@@ -126,7 +126,7 @@ public class CreateLevelScript : MonoBehaviour {
         if (www.error == null) {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
             
-            for (int i = 0; i < (dataPerLine * numOfLines); i += 4) {
+            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
                 GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedLevel"));
 
                 go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
