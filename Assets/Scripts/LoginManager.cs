@@ -84,25 +84,7 @@ public class LoginManager : MonoBehaviour {
 
             //Debug.Log(dadosPorLinha);
             //Debug.Log(numLinhas);
-
-            /*
-            //tratamento da string HTML recebida
-            string[] linhas = www.text.Split('&'); //resultado & dados
-            foreach (string linha in linhas)
-            {
-                if (linha.StartsWith("id")) //a segunda parte (apos o &) traz os dados do usuario
-                {
-                    int inicioNum = linha.IndexOf("=");
-                    string resto_linha = linha.Substring(inicioNum + 1);
-
-                    string[] dados = resto_linha.Split('#'); //cada dado esta separado por um #
-                    id = dados[0];
-                    is_prof = dados[1];
-                }
-                else resultado = linha; //a primeira parte indica sucesso (1) ou fracasso (0)
-            }
-            */
-
+            
             //sucesso
             if (resultado == true)
             {
