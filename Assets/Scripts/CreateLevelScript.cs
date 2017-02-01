@@ -112,22 +112,26 @@ public class CreateLevelScript : MonoBehaviour {
 
         if (www.error == null) {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
+            if (result == true)
+            {
+                for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine)
+                {
+                    //Debug.Log(i + " ordem- " + data[i + 9].ToString());
+                    int x = int.Parse(data[i + 1].ToString());
+                    int y = int.Parse(data[i + 2].ToString());
 
-            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
-                //Debug.Log(i + " ordem- " + data[i + 9].ToString());
-                int x = int.Parse(data[i + 1].ToString());
-                int y = int.Parse(data[i + 2].ToString());
+                    m_gridScript.gridMatrix[x, y].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.red;
+                    m_gridScript.gridMatrix[x, y].SetCell((Cell.OperationType)int.Parse(data[i + 7].ToString()), int.Parse(data[i + 6].ToString()), data[i + 4].ToString(), float.Parse(data[i + 5].ToString()));
+                    m_gridScript.gridMatrix[x, y].SetCellStatus(true);
 
-                m_gridScript.gridMatrix[x, y].GetCellPrimitive().GetComponent<Renderer>().material.color = Color.red;
-                m_gridScript.gridMatrix[x, y].SetCell((Cell.OperationType)int.Parse(data[i + 7].ToString()), int.Parse(data[i + 6].ToString()), data[i + 4].ToString(), float.Parse(data[i + 5].ToString()));
-                m_gridScript.gridMatrix[x, y].SetCellStatus(true);
-
-                m_gridScript.selectedCells[m_gridScript.numOfSelectedCells] = m_gridScript.gridMatrix[x, y];
-                m_gridScript.lastSelectedCell = m_gridScript.gridMatrix[x, y];
-                m_selectCellScript.currentSelectedCell = m_gridScript.gridMatrix[x, y];
-                m_selectCellScript.LoadCellInfo(m_gridScript.gridMatrix[x, y]);
-                ++m_gridScript.numOfSelectedCells;
+                    m_gridScript.selectedCells[m_gridScript.numOfSelectedCells] = m_gridScript.gridMatrix[x, y];
+                    m_gridScript.lastSelectedCell = m_gridScript.gridMatrix[x, y];
+                    m_selectCellScript.currentSelectedCell = m_gridScript.gridMatrix[x, y];
+                    m_selectCellScript.LoadCellInfo(m_gridScript.gridMatrix[x, y]);
+                    ++m_gridScript.numOfSelectedCells;
+                }
             }
+            else FeedBackMensagem("Erro: Nenhuma casa encontrada.");
         }
 
         LoadLevelPanel.SetActive(false);
@@ -155,23 +159,26 @@ public class CreateLevelScript : MonoBehaviour {
 
         if (www.error == null) {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
-            
-            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
-                GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedLevel"));
+            if (result == true)
+            {
+                for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
+                    GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedLevel"));
 
-                go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
-                go.transform.localScale = new Vector3(1f, 1f, 1f);
-                go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
-                go.GetComponent<Button>().onClick.AddListener(delegate () {
-                    m_levelName.text = go.transform.GetChild(1).GetComponent<Text>().text;
-                    LoadLevel(go.transform.GetChild(0).GetComponent<Text>().text);
-                });
+                    go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
+                    go.transform.localScale = new Vector3(1f, 1f, 1f);
+                    go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
+                    go.GetComponent<Button>().onClick.AddListener(delegate () {
+                        m_levelName.text = go.transform.GetChild(1).GetComponent<Text>().text;
+                        LoadLevel(go.transform.GetChild(0).GetComponent<Text>().text);
+                    });
 
-                go.name = data[i] + ":" + data[i + 1].ToString() + ":" + data[i + 3].ToString();
-                go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
-                go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
-                go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+                    go.name = data[i] + ":" + data[i + 1].ToString() + ":" + data[i + 3].ToString();
+                    go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
+                    go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
+                    go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+                }
             }
+            else FeedBackMensagem("Erro: Nenhuma fase encontrada.");
         }
     }
 
@@ -200,38 +207,42 @@ public class CreateLevelScript : MonoBehaviour {
         if (www.error == null)
         {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
-
-            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine)
+            if (result == true)
             {
-                GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedQuestion"));
+                for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine)
+                {
+                    GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedQuestion"));
 
-                go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
-                go.transform.localScale = new Vector3(1f, 1f, 1f);
-                go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
-                go.GetComponent<Button>().onClick.AddListener(delegate () {
-                    string[] dados = go.name.Split('#'); //cada dado esta separado por um #
+                    go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
+                    go.transform.localScale = new Vector3(1f, 1f, 1f);
+                    go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
+                    go.GetComponent<Button>().onClick.AddListener(delegate ()
+                    {
+                        string[] dados = go.name.Split('#'); //cada dado esta separado por um #
 
-                    InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
-                    InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
-                    InputField difficulty = GameObject.Find("DifficultyInput").GetComponent<InputField>();
-                    Dropdown operation = GameObject.Find("Dropdown").GetComponent<Dropdown>();
+                        InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
+                        InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
+                        InputField difficulty = GameObject.Find("DifficultyInput").GetComponent<InputField>();
+                        Dropdown operation = GameObject.Find("Dropdown").GetComponent<Dropdown>();
 
-                    question.text = dados[1].ToString();
-                    answer.text = dados[2].ToString();
-                    difficulty.text = dados[3].ToString();
-                    operation.value = int.Parse(dados[4].ToString());
+                        question.text = dados[1].ToString();
+                        answer.text = dados[2].ToString();
+                        difficulty.text = dados[3].ToString();
+                        operation.value = int.Parse(dados[4].ToString());
 
-                    m_selectCellScript.SaveCellInfo(m_selectCellScript.currentSelectedCell);
+                        m_selectCellScript.SaveCellInfo(m_selectCellScript.currentSelectedCell);
 
-                    LoadLevelPanel.SetActive(false);
-                    m_gridScript.SetPlayable(true);
-                });
+                        LoadLevelPanel.SetActive(false);
+                        m_gridScript.SetPlayable(true);
+                    });
 
-                go.name = data[i] + "#" + data[i + 1].ToString() + "#" + data[i + 2].ToString() + "#" + data[i + 3].ToString() + "#" + data[i + 4].ToString() + "#" + data[i + 5].ToString();
-                go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
-                go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
-                go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+                    go.name = data[i] + "#" + data[i + 1].ToString() + "#" + data[i + 2].ToString() + "#" + data[i + 3].ToString() + "#" + data[i + 4].ToString() + "#" + data[i + 5].ToString();
+                    go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
+                    go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
+                    go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+                }
             }
+            else FeedBackMensagem("Erro: Nenhuma pergunta encontrada.");
         }
     }
 
