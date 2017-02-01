@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class CreateLevelScript : MonoBehaviour {
     public GameObject LoadLevelPanel;
 
+    //Text para exibir mensagens
+    [SerializeField]
+    private Text messageText = null;
+
     // Base das URLs para inserir e consultar dados no BD
-	private string m_levelUrl;
+    private string m_levelUrl;
 	private string m_cellUrl;
     private string m_selectLevelsUrl;
     private string m_selectCellsUrl;
@@ -30,9 +35,23 @@ public class CreateLevelScript : MonoBehaviour {
 		m_levelName = GameObject.Find("LevelNameInput").GetComponent<InputField>();
 	}
 
-	public void SaveLevel () {
+    public void VoltarLogin()
+    {
+        SceneManager.LoadScene("login", LoadSceneMode.Single);
+    }
+
+    public void FeedBackMensagem(string mensagem)
+    {
+        messageText.CrossFadeAlpha(100f, 0f, false);
+        messageText.color = Color.black;
+        messageText.text = mensagem;
+        messageText.CrossFadeAlpha(0f, 2f, false);
+    }
+
+    public void SaveLevel () {
 		if (m_levelName.text == "") {
 			Debug.Log("Erro: tentou salvar um nível sem nome.");
+            FeedBackMensagem("Erro: Digite o nome do nivel antes de salvar.");
 			return;
 		}
 
@@ -57,6 +76,13 @@ public class CreateLevelScript : MonoBehaviour {
 			float answer = m_gridScript.selectedCells[i].GetCellAnswer();
 			int difficulty = m_gridScript.selectedCells[i].GetCellDifficulty();
 			int type = (int) m_gridScript.selectedCells[i].GetCellType();
+
+            if (question == "")
+            {
+                FeedBackMensagem("Erro: Você se esqueceu de inserir alguma questão.");
+                wwwList.Clear();
+                return;
+            }
 
             wwwList.Add(new WWW(m_cellUrl + "?questao=" + WWW.EscapeURL(question) + "&resposta=" + answer + "&dificuldade=" + difficulty + "&tipo=" + type + "&autor=" + id + "&x=" + x + "&y=" + y + "&ordem=" + i + "&fase=" + WWW.EscapeURL(m_levelName.text)));
         }
@@ -84,7 +110,7 @@ public class CreateLevelScript : MonoBehaviour {
             ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
 
             for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine) {
-                Debug.Log(i + " ordem- " + data[i + 9].ToString());
+                //Debug.Log(i + " ordem- " + data[i + 9].ToString());
                 int x = int.Parse(data[i + 1].ToString());
                 int y = int.Parse(data[i + 2].ToString());
 
@@ -132,7 +158,10 @@ public class CreateLevelScript : MonoBehaviour {
                 go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
                 go.transform.localScale = new Vector3(1f, 1f, 1f);
                 go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
-                go.GetComponent<Button>().onClick.AddListener(delegate () { LoadLevel(go.transform.GetChild(0).GetComponent<Text>().text); });
+                go.GetComponent<Button>().onClick.AddListener(delegate () {
+                    m_levelName.text = go.transform.GetChild(1).GetComponent<Text>().text;
+                    LoadLevel(go.transform.GetChild(0).GetComponent<Text>().text);
+                });
 
                 go.name = data[i] + ":" + data[i + 1].ToString() + ":" + data[i + 3].ToString();
                 go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
@@ -169,6 +198,10 @@ public class CreateLevelScript : MonoBehaviour {
         }
 
         if (wwwList2.Count > 0) StartCoroutine(ISaveWWWList(wwwList2));
-        else Debug.Log("Fase salva com sucesso!");
+        else
+        {
+            Debug.Log("Fase salva com sucesso!");
+            FeedBackMensagem("Fase salva com sucesso!");
+        }
     }
 }
