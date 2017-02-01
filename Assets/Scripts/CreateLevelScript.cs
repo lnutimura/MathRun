@@ -16,6 +16,7 @@ public class CreateLevelScript : MonoBehaviour {
     private string m_levelUrl;
 	private string m_cellUrl;
     private string m_selectLevelsUrl;
+    private string m_selectQuestionsUrl;
     private string m_selectCellsUrl;
     // Lista de URLs completas para inserir dados no BD
     private List<WWW> wwwList;
@@ -28,6 +29,7 @@ public class CreateLevelScript : MonoBehaviour {
         m_levelUrl = "https://mathrun.000webhostapp.com/cadastraFase.php";
 		m_cellUrl = "https://mathrun.000webhostapp.com/cadastraPergunta_e_Casa.php";
         m_selectLevelsUrl = "https://mathrun.000webhostapp.com/selectFases.php";
+        m_selectQuestionsUrl = "https://mathrun.000webhostapp.com/selectPerguntas.php";
         m_selectCellsUrl = "https://mathrun.000webhostapp.com/selectFase_Casa_Pergunta.php";
 
         m_selectCellScript = GetComponent<SelectCell>();
@@ -54,6 +56,8 @@ public class CreateLevelScript : MonoBehaviour {
             FeedBackMensagem("Erro: Digite o nome do nivel antes de salvar.");
 			return;
 		}
+
+        FeedBackMensagem("Salvando...");
 
         m_selectCellScript.SaveCellInfo(m_selectCellScript.currentSelectedCell);
         wwwList = new List<WWW>();
@@ -171,6 +175,66 @@ public class CreateLevelScript : MonoBehaviour {
         }
     }
 
+    public void RetrieveQuestions()
+    {
+        LoadLevelPanel.SetActive(true);
+        m_gridScript.SetPlayable(false);
+
+        foreach (Transform child in GameObject.Find("Level Grid Layout").transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        WWW www = new WWW(m_selectQuestionsUrl);
+        StartCoroutine(IRetrieveQuestions(www));
+    }
+
+    IEnumerator IRetrieveQuestions(WWW www)
+    {
+        yield return www;
+
+        bool result;
+        int numOfLines = 0;
+        int dataPerLine = 0;
+
+        if (www.error == null)
+        {
+            ArrayList data = MenuManager.GetDadosWWW(www, out result, out dataPerLine, out numOfLines);
+
+            for (int i = 0; i < (dataPerLine * numOfLines); i += dataPerLine)
+            {
+                GameObject go = (GameObject)Instantiate(Resources.Load("DownloadedQuestion"));
+
+                go.transform.SetParent(GameObject.Find("Level Grid Layout").transform);
+                go.transform.localScale = new Vector3(1f, 1f, 1f);
+                go.transform.localPosition = new Vector3(go.transform.localPosition.x, go.transform.localPosition.y, 0f);
+                go.GetComponent<Button>().onClick.AddListener(delegate () {
+                    string[] dados = go.name.Split('#'); //cada dado esta separado por um #
+
+                    InputField question = GameObject.Find("QuestionInput").GetComponent<InputField>();
+                    InputField answer = GameObject.Find("AnswerInput").GetComponent<InputField>();
+                    InputField difficulty = GameObject.Find("DifficultyInput").GetComponent<InputField>();
+                    Dropdown operation = GameObject.Find("Dropdown").GetComponent<Dropdown>();
+
+                    question.text = dados[1].ToString();
+                    answer.text = dados[2].ToString();
+                    difficulty.text = dados[3].ToString();
+                    operation.value = int.Parse(dados[4].ToString());
+
+                    m_selectCellScript.SaveCellInfo(m_selectCellScript.currentSelectedCell);
+
+                    LoadLevelPanel.SetActive(false);
+                    m_gridScript.SetPlayable(true);
+                });
+
+                go.name = data[i] + "#" + data[i + 1].ToString() + "#" + data[i + 2].ToString() + "#" + data[i + 3].ToString() + "#" + data[i + 4].ToString() + "#" + data[i + 5].ToString();
+                go.transform.GetChild(0).GetComponent<Text>().text = data[i].ToString();
+                go.transform.GetChild(1).GetComponent<Text>().text = data[i + 1].ToString();
+                go.transform.GetChild(2).GetComponent<Text>().text = data[i + 3].ToString();
+            }
+        }
+    }
+
     IEnumerator ISaveWWWList(List<WWW> wwwList) {
         List<WWW> wwwList2 = new List<WWW>();
         for (int i = 0; i < wwwList.Count; i++) {
@@ -194,7 +258,7 @@ public class CreateLevelScript : MonoBehaviour {
                 wwwList2.Add(new WWW(wwwList[i].url));
             }
 
-            yield return new WaitForSeconds(2f);
+            //yield return new WaitForSeconds(2f);
         }
 
         if (wwwList2.Count > 0) StartCoroutine(ISaveWWWList(wwwList2));
