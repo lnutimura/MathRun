@@ -107,7 +107,7 @@ namespace Estatistica
             {
                 allButtons[i] = Instantiate(ButtonPrefab.gameObject) as GameObject;
                 allButtons[i].transform.SetParent(Content);
-                allButtons[i].name = (dropdown.value == 0 ? "F" : "A") + i;
+                allButtons[i].name = (dropdown.value == 0 ? "F-" : "A-") + i;
                 allButtons[i].transform.localPosition = new Vector3(928, (buttonHeight / 2f + buttonHeight * i + ySpacing * i) * -1, 0);
                 allButtons[i].transform.localScale = Vector3.one;
                 allButtons[i].GetComponent<Button>().onClick.AddListener(delegate
@@ -121,18 +121,28 @@ namespace Estatistica
 
         public void SelecaoParaPrincipal(string buttonName)
         {
+            int id = ExtractID(buttonName);
             switch (buttonName[0])
             {
                 case 'F':
-                    FindObjectOfType<TelaFase>().gameObject.SetActive(true);
+                    FindObjectOfType<EstatisticaManager>().telaFase.gameObject.SetActive(true);
+                    FindObjectOfType<EstatisticaManager>().telaFase.CarregaDadosFase(id);
                     break;
                 case 'A':
-                    FindObjectOfType<TelaAluno>().gameObject.SetActive(true);
+                    FindObjectOfType<EstatisticaManager>().telaAluno.gameObject.SetActive(true);
+                    FindObjectOfType<EstatisticaManager>().telaAluno.CarregaDadosAluno(id);
                     break;
                 default:
                     break;
             }
             gameObject.SetActive(false);
+        }
+
+        //assumindo que a string tem um formato [LETRA][NUMERO]
+        private int ExtractID(string str)
+        {
+            string[] array = str.Split('-');
+            return int.Parse(array[1]);
         }
     }
 }

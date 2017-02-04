@@ -13,6 +13,8 @@ namespace Estatistica
         public enum Escopo { Ultimos30Dias, Total };
         Escopo escopo;
 
+        public Dropdown dropdown;
+        [Space]
         public Text statusText;
         public Text nomeAluno;
         public Text DOB;
@@ -23,6 +25,8 @@ namespace Estatistica
         public Text multiplicacao;
         public Text divisao;
         public Text misto;
+
+        private int mIdAluno;
 
         private void Start()
         {
@@ -42,16 +46,15 @@ namespace Estatistica
             misto.text = "";
         }
 
-        private void Update()
+        public void RecarregaAluno()
         {
-            if (Input.GetKeyDown(KeyCode.Space) && !FindObjectOfType<EstatisticaManager>().isLoading)
-            {
-                CarregaDadosAluno(0);
-            }
+            escopo = (dropdown.value == 0 ? Escopo.Ultimos30Dias : Escopo.Total);
+            CarregaDadosAluno(mIdAluno);
         }
 
         public void CarregaDadosAluno(int idAluno)
         {
+            mIdAluno = idAluno;
             WWW www = new WWW(url + "?id_usuario=" + idAluno);
             StartCoroutine(SelectPerguntaUsuario(www));
         }
@@ -108,7 +111,15 @@ namespace Estatistica
 
             for (int i = 0, k = 0; i < (largura * altura) && k < altura; i += largura, k++)
             {
-                print(dados[i + 4].ToString());
+                //print(dados[i + 4].ToString());
+                if (escopo == Escopo.Ultimos30Dias)
+                {
+                    string[] data = dados[i + 4].ToString().Split('-');
+                    System.DateTime hoje = System.DateTime.Now.Date;
+                    System.DateTime dia = new System.DateTime(int.Parse(data[0]), int.Parse(data[1]), int.Parse(data[2]));
+                    if ((hoje - dia).TotalDays > 30)
+                        continue;
+                }
                 switch ((int)dados[i+2])
                 {
                     case 0: //SOMA

@@ -12,6 +12,8 @@ namespace Estatistica
         private string urlAutor = "https://mathrun.000webhostapp.com/selectDadosFase_Autor.php";
         private string urlPontos = "https://mathrun.000webhostapp.com/selectDadosFase_Pontos.php";
 
+        public Dropdown dropdown;
+        [Space]
         public Text statusText;
         public Text nomeAutor;
         public Text DOB;
@@ -22,6 +24,8 @@ namespace Estatistica
         public Text melhorAluno;
         public Text piorAluno;
 
+        private int mIdFase;
+
         public enum Escopo { Ultimos30Dias, Total };
         Escopo escopo;
 
@@ -30,8 +34,14 @@ namespace Estatistica
             escopo = Escopo.Ultimos30Dias;
         }
 
+        public void RecarregaFase()
+        {
+            escopo = (dropdown.value == 0 ? Escopo.Ultimos30Dias : Escopo.Total);
+            CarregaDadosFase(mIdFase);
+        }
         public void CarregaDadosFase(int idFase)
-        {            
+        {
+            mIdFase = idFase;
             StartCoroutine(SelectDadosFase(idFase));
         }
 

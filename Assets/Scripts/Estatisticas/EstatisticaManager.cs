@@ -2,17 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Estatistica
 {
     public class EstatisticaManager : MonoBehaviour
     {
+        public TelaSelecao telaSelecao;
+        public TelaAluno telaAluno;
+        public TelaFase telaFase;
+
+        public bool isProf;
+
+        public void Start()
+        {
+            string is_prof = PlayerPrefs.GetString("rememberIsProf");
+            if (is_prof == "1")
+            {
+                isProf = true;
+                telaSelecao.gameObject.SetActive(true);
+                telaSelecao.RecalculateList();
+            } else
+            {
+                isProf = false;
+                telaAluno.gameObject.SetActive(true);
+                string idString = PlayerPrefs.GetString("rememberId");
+                telaAluno.CarregaDadosAluno(int.Parse(idString));
+            }
+        }
+
         #region LOADING_SCREEN
         public RectTransform loadObject;
         public Image background;
         public Image icon;
         private Coroutine loadingRoutine;
         public bool isLoading;
+
 
         public void StartLoadingAnimation()
         {
@@ -54,5 +79,10 @@ namespace Estatistica
             }
         }
         #endregion
+
+        public void ReturnToMainScreen()
+        {
+            SceneManager.LoadScene("login");
+        }
     }
 }
