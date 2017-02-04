@@ -124,7 +124,7 @@ namespace Estatistica
         {
             nomeFase.text = dados[0 + 1].ToString();
             nomeAutor.text = dados[0 + 2].ToString();
-            DOB.text = dados[0 + 3].ToString();
+            DOB.text = EstatisticaManager.CorrigeFormatoData(dados[0 + 3].ToString());
             eMail.text = dados[0 + 4].ToString();
         }
 
@@ -134,12 +134,20 @@ namespace Estatistica
 
             for (int i = 0, k = 0; i < (largura * altura) && k < altura; i += largura, k++)
             {
+                if (escopo == Escopo.Ultimos30Dias)
+                {
+                    string[] data = dados[i + 3].ToString().Split('-');
+                    System.DateTime hoje = System.DateTime.Now.Date;
+                    System.DateTime dia = new System.DateTime(int.Parse(data[0]), int.Parse(data[1]), int.Parse(data[2]));
+                    if ((hoje - dia).TotalDays > 30)
+                        continue;
+                }
                 if (!listaPontos.ContainsKey(dados[i + 1].ToString()))
                 {
                     listaPontos.Add(dados[i + 1].ToString(), 0);
                 }
 
-                if ((int)dados[i + 2] == 1)
+                if (int.Parse(dados[i + 2].ToString()) == 1)
                 {
                     listaPontos[dados[i + 1].ToString()]++;
                 }
@@ -163,6 +171,7 @@ namespace Estatistica
             }
             piorAluno.text = pior + " (" + piorScore + ")";
             melhorAluno.text = melhor + " (" + melhorScore + ")";
+            vezesJogada.text = keyArray.Length.ToString();
         }
 
         //private void ExibirDadosPontosVazio()

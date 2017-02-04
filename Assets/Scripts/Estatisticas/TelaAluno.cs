@@ -92,9 +92,9 @@ namespace Estatistica
 
         void ExibirDados(ArrayList dados, int largura, int altura)
         {
-            nomeAluno.text = dados[0 + 6].ToString();
-            DOB.text = dados[0 + 7].ToString();
-            eMail.text = dados[0 + 8].ToString();
+            nomeAluno.text = dados[0 + 3].ToString();
+            DOB.text = EstatisticaManager.CorrigeFormatoData(dados[0 + 4].ToString());
+            eMail.text = dados[0 + 5].ToString();
 
             int totalGeral = altura;
             int acertoGeral = 0;
@@ -111,20 +111,19 @@ namespace Estatistica
 
             for (int i = 0, k = 0; i < (largura * altura) && k < altura; i += largura, k++)
             {
-                //print(dados[i + 4].ToString());
                 if (escopo == Escopo.Ultimos30Dias)
                 {
-                    string[] data = dados[i + 4].ToString().Split('-');
+                    string[] data = dados[i + 2].ToString().Split('-');
                     System.DateTime hoje = System.DateTime.Now.Date;
                     System.DateTime dia = new System.DateTime(int.Parse(data[0]), int.Parse(data[1]), int.Parse(data[2]));
                     if ((hoje - dia).TotalDays > 30)
                         continue;
                 }
-                switch ((int)dados[i+2])
+                switch (int.Parse(dados[i+6].ToString()))
                 {
                     case 0: //SOMA
                         totalSoma++;
-                        if ((int)dados[i + 3] == 1)
+                        if (int.Parse(dados[i + 1].ToString()) == 1)
                         {
                             acertoSoma++;
                             acertoGeral++;
@@ -132,7 +131,7 @@ namespace Estatistica
                         break;
                     case 1: // SUBT
                         totalSubt++;
-                        if ((int)dados[i + 3] == 1)
+                        if (int.Parse(dados[i + 1].ToString()) == 1)
                         {
                             acertoSubt++;
                             acertoGeral++;
@@ -140,7 +139,7 @@ namespace Estatistica
                         break;
                     case 2: //MULT
                         totalMult++;
-                        if ((int)dados[i + 3] == 1)
+                        if (int.Parse(dados[i + 1].ToString()) == 1)
                         {
                             acertoMult++;
                             acertoGeral++;
@@ -148,7 +147,7 @@ namespace Estatistica
                         break;
                     case 3: //DIV
                         totalDiv++;
-                        if ((int)dados[i + 3] == 1)
+                        if (int.Parse(dados[i + 1].ToString()) == 1)
                         {
                             acertoDiv++;
                             acertoGeral++;
@@ -156,7 +155,7 @@ namespace Estatistica
                         break;
                     case 4: //MISTO
                         totalMisto++;
-                        if ((int)dados[i + 3] == 1)
+                        if (int.Parse(dados[i + 1].ToString()) == 1)
                         {
                             acertoMisto++;
                             acertoGeral++;
@@ -179,10 +178,10 @@ namespace Estatistica
         {
             if (scored > total / 2f)
             {
-                t.color = Color.green;
+                t.color = new Color(201 / 255f, 1, 184 / 255f);
             } else
             {
-                t.color = Color.red;
+                t.color = new Color(1, 171 / 255f, 171 / 255f);
             }
 
             t.text = scored + "/" + total;

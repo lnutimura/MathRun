@@ -84,5 +84,11 @@ namespace Estatistica
         {
             SceneManager.LoadScene("login");
         }
+
+        public static string CorrigeFormatoData(string data)
+        {
+            string[] array = data.Split('-');
+            return array[2] + "/" + array[1] + "/" + array[0];
+        }
     }
 }

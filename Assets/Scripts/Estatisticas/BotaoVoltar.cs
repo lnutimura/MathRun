@@ -6,14 +6,16 @@ public class BotaoVoltar : MonoBehaviour {
 
     public void VoltarSelecao()
     {
-        if (FindObjectOfType<Estatistica.EstatisticaManager>().isProf)
+        Estatistica.EstatisticaManager mgr = FindObjectOfType<Estatistica.EstatisticaManager>();
+        if (mgr.isProf)
         {
-            FindObjectOfType<Estatistica.TelaSelecao>().gameObject.SetActive(true);
-            FindObjectOfType<Estatistica.TelaSelecao>().RecalculateList();
-            FindObjectOfType<Estatistica.TelaAluno>().gameObject.SetActive(false);
+            mgr.telaSelecao.gameObject.SetActive(true);
+            mgr.telaSelecao.RecalculateList();
+            mgr.telaAluno.gameObject.SetActive(false);
+            mgr.telaFase.gameObject.SetActive(false);
         } else
         {
-            FindObjectOfType<Estatistica.EstatisticaManager>().ReturnToMainScreen();
+            mgr.ReturnToMainScreen();
         }
     }
 }

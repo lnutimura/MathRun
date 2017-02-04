@@ -3,9 +3,7 @@
 
     $pergunta = $_GET['id_fase'];
 
-    $select = "SELECT h.id, u.nome, h.acertou, h.data
-                FROM historico h, usuario u
-                WHERE h.id_usuario = u.id AND h.id_fase =:pergunta";
+    $select = "SELECT h.id, u.nome, h.acertou, h.data FROM historico h LEFT JOIN usuario u ON u.id = h.id_usuario WHERE h.id_fase =:pergunta ";
 
     $result = $conexao->prepare($select);
     $result->bindParam(':pergunta', $pergunta, PDO::PARAM_STR); 
@@ -16,11 +14,11 @@
         echo 1;
         foreach($result as $pergunta) {
             $id = $pergunta['id'];
-            $nomeAluno = $pergunta['nomeAluno'];
+            $nome = $pergunta['nome'];
             $acertou = $pergunta['acertou'];
-            $data_nascimento = $pergunta['data_nascimento'];
+            $data = $pergunta['data'];
 
-            echo '&id='.$id.'#'.$nomeAluno.'#'.$acertou.'#'.$data_nascimento;
+            echo '&id='.$id.'#'.$nome.'#'.$acertou.'#'.$data;
         }
     }
     else{

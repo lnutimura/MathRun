@@ -88,6 +88,11 @@ namespace Estatistica
             for (int i = 0, k = 0; i < (largura * altura) && k < altura; i += largura, k++)
             {
                 allButtons[k].GetComponentInChildren<Text>().text = dados[i + 1].ToString();
+                string n = allButtons[k].name = (dropdown.value == 0 ? "F-" : "A-") + dados[i + 0].ToString();
+                allButtons[k].GetComponent<Button>().onClick.AddListener(delegate
+                {
+                    SelecaoParaPrincipal(n);
+                });
             }
         }
 
@@ -107,22 +112,17 @@ namespace Estatistica
             {
                 allButtons[i] = Instantiate(ButtonPrefab.gameObject) as GameObject;
                 allButtons[i].transform.SetParent(Content);
-                allButtons[i].name = (dropdown.value == 0 ? "F-" : "A-") + i;
                 allButtons[i].transform.localPosition = new Vector3(928, (buttonHeight / 2f + buttonHeight * i + ySpacing * i) * -1, 0);
                 allButtons[i].transform.localScale = Vector3.one;
-                allButtons[i].GetComponent<Button>().onClick.AddListener(delegate
-                {
-                    SelecaoParaPrincipal(allButtons[i].name);
-                });
             }
 
             return allButtons;
         }
 
-        public void SelecaoParaPrincipal(string buttonName)
+        public void SelecaoParaPrincipal(string name)
         {
-            int id = ExtractID(buttonName);
-            switch (buttonName[0])
+            int id = ExtractID(name);
+            switch (name[0])
             {
                 case 'F':
                     FindObjectOfType<EstatisticaManager>().telaFase.gameObject.SetActive(true);

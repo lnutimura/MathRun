@@ -3,9 +3,13 @@
 
     $pergunta = $_GET['id_usuario'];
 
-    $select = "SELECT h.id, h.id_fase, p.tipo, h.acertou, h.data, u.id as user_id, u.nome, u.data_nascimento, u.email
-								FROM historico h, usuario u, perguntas p
-								WHERE h.id_pergunta = p.id AND u.id =:pergunta";
+    $select = "SELECT h.id as 'h_id', h.acertou, h.data, u.nome, u.email, u.data_nascimento, p.tipo
+                FROM historico h
+                LEFT JOIN usuario u
+                ON u.id = h.id_usuario
+                LEFT JOIN perguntas p
+                ON p.id = h.id_pergunta
+                WHERE h.id_usuario =:pergunta";
 
     $result = $conexao->prepare($select);
     $result->bindParam(':pergunta', $pergunta, PDO::PARAM_STR); 
@@ -16,15 +20,14 @@
         echo 1;
         foreach($result as $pergunta) {
             $id = $pergunta['id'];
+            $acertou = $pergunta['acertou'];
+            $data = $pergunta['data'];
             $nome = $pergunta['nome'];
             $data_nascimento = $pergunta['data_nascimento'];
             $email = $pergunta['email'];
-            $id_fase = $pergunta['id_fase'];
-            $id_pergunta = $pergunta['id_pergunta'];
-            $acertou = $pergunta['acertou'];
-            $data = $pergunta['data'];
+            $tipo = $pergunta['tipo'];
 
-            echo '&id='.$id.'#'.$nome.'#'.$data_nascimento.'#'.$email.'#'.$id_fase.'#'.$id_pergunta.'#'.$acertou.'#'.$data;
+            echo '&id='.$id.'#'.$acertou.'#'.$data.'#'.$nome.'#'.$data_nascimento.'#'.$email.'#'.$tipo;
         }
     }
     else{
