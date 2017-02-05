@@ -29,12 +29,12 @@ public class MenuManager : MonoBehaviour {
 
     public void Jogar()
     {
-        //StartCoroutine(CarregaScene("Jogo"));
+        StartCoroutine(CarregaScene("StudentModule"));
     }
 
     public void CriarFase()
     {
-        StartCoroutine(CarregaScene("Main"));
+        StartCoroutine(CarregaScene("ProfessorModule"));
     }
 
     public void Estatisticas()
@@ -44,7 +44,7 @@ public class MenuManager : MonoBehaviour {
 
     IEnumerator CarregaScene(string nome)
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.2f);
         SceneManager.LoadScene(nome, LoadSceneMode.Single);
     }
 

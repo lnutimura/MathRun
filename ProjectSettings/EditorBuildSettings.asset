@@ -8,6 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/login.unity
   - enabled: 1
-    path: Assets/Scenes/Main.unity
-  - enabled: 1
     path: Assets/Scenes/Estatisticas.unity
+  - enabled: 1
+    path: Assets/Scenes/ProfessorModule.unity
+  - enabled: 1
+    path: Assets/Scenes/StudentModule.unity

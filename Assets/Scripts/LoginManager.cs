@@ -79,14 +79,13 @@ public class LoginManager : MonoBehaviour {
         if (www.error == null)
         {
             ArrayList dados = MenuManager.GetDadosWWW(www, out resultado, out dadosPorLinha, out numLinhas);
-            //Debug.Log(dadosPorLinha);
-            //Debug.Log(numLinhas);
-            
             //sucesso
             if (resultado == true)
             {
                 id = dados[0].ToString();
                 is_prof = dados[1].ToString();
+            
+            
                 //salva dados do player
                 if (rememberData.isOn) SalvaPlayerPrefs(1, id, login, senha, is_prof);
                 else SalvaPlayerPrefs(0, id, "", "", "");
