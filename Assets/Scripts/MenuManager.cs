@@ -39,7 +39,7 @@ public class MenuManager : MonoBehaviour {
 
     public void Estatisticas()
     {
-        //StartCoroutine(CarregaScene("Estatisticas"));
+        StartCoroutine(CarregaScene("Estatisticas"));
     }
 
     IEnumerator CarregaScene(string nome)
