@@ -8,8 +8,9 @@ namespace Estatistica
     public class TelaAluno : MonoBehaviour
     {
 
-        private string url = "https://mathrun.000webhostapp.com/selectPerguntasDoUsuario.php";
-
+        //private string url = "https://mathrun.000webhostapp.com/selectPerguntasDoUsuario.php";
+        private string urlFicha = "https://mathrun.000webhostapp.com/selectDadosAluno_Aluno.php";
+        private string urlPontos = "https://mathrun.000webhostapp.com/selectDadosAluno_Pontos.php";
         public enum Escopo { Ultimos30Dias, Total };
         Escopo escopo;
 
@@ -55,27 +56,28 @@ namespace Estatistica
         public void CarregaDadosAluno(int idAluno)
         {
             mIdAluno = idAluno;
-            WWW www = new WWW(url + "?id_usuario=" + idAluno);
-            StartCoroutine(SelectPerguntaUsuario(www));
+            StartCoroutine(SelectPerguntaUsuario());
         }
 
-        IEnumerator SelectPerguntaUsuario(WWW www)
+        IEnumerator SelectPerguntaUsuario()
         {
             ClearContent();
             FindObjectOfType<EstatisticaManager>().StartLoadingAnimation();
 
+            bool sucessoAluno = false;
+            WWW www = new WWW(urlFicha + "?id_usuario=" + mIdAluno);
+
             yield return www;
             if (www.error == null)
             {
-                bool sucesso;
                 int numDadosLinha;
                 int numLinhas;
 
-                ArrayList dados = MenuManager.GetDadosWWW(www, out sucesso, out numDadosLinha, out numLinhas);
-                if (sucesso)
+                ArrayList dados = MenuManager.GetDadosWWW(www, out sucessoAluno, out numDadosLinha, out numLinhas);
+                if (sucessoAluno)
                 {
                     MenuManager.FeedBackOk(statusText, "Status: Consulta concluída!");
-                    ExibirDados(dados, numDadosLinha, numLinhas);
+                    ExibirDadosAluno(dados, numDadosLinha, numLinhas);
                 }
                 else
                 {
@@ -87,15 +89,46 @@ namespace Estatistica
                 MenuManager.FeedBackError(statusText, "Status: Erro ao conectar ao servidor.");
             }
 
+            if (sucessoAluno)
+            {
+                bool sucesso;
+                www = new WWW(urlPontos + "?id_usuario=" + mIdAluno);
+                yield return www;
+                if (www.error == null)
+                {
+                    int numDadosLinha;
+                    int numLinhas;
+
+                    ArrayList dados = MenuManager.GetDadosWWW(www, out sucesso, out numDadosLinha, out numLinhas);
+                    if (sucesso)
+                    {
+                        MenuManager.FeedBackOk(statusText, "Status: Consulta concluída!");
+                        ExibirDadosPontos(dados, numDadosLinha, numLinhas);
+                    }
+                    else
+                    {
+                        MenuManager.FeedBackError(statusText, "Status: Consulta concluída (este aluno ainda não jogou).");
+                    }
+                }
+                else
+                {
+                    MenuManager.FeedBackError(statusText, "Status: Erro ao conectar ao servidor.");
+                }
+
+            }
+
             FindObjectOfType<EstatisticaManager>().StopLoadingAnimation();
         }
 
-        void ExibirDados(ArrayList dados, int largura, int altura)
+        void ExibirDadosAluno(ArrayList dados, int largura, int altura)
         {
-            nomeAluno.text = dados[0 + 3].ToString();
-            DOB.text = EstatisticaManager.CorrigeFormatoData(dados[0 + 4].ToString());
-            eMail.text = dados[0 + 5].ToString();
+            nomeAluno.text = dados[0 + 1].ToString();
+            DOB.text = EstatisticaManager.CorrigeFormatoData(dados[0 + 2].ToString());
+            eMail.text = dados[0 + 3].ToString();
+        }
 
+        void ExibirDadosPontos(ArrayList dados, int largura, int altura)
+        {
             int totalGeral = altura;
             int acertoGeral = 0;
             int totalSoma = 0;
@@ -119,7 +152,7 @@ namespace Estatistica
                     if ((hoje - dia).TotalDays > 30)
                         continue;
                 }
-                switch (int.Parse(dados[i+6].ToString()))
+                switch (int.Parse(dados[i+3].ToString()))
                 {
                     case 0: //SOMA
                         totalSoma++;
