@@ -1,93 +1,126 @@
-﻿using System.Collections;
+﻿/*
+ * Esse script não pode ser atrelado a um GameObject.
+ * O intuito dele é servir de base para a construção
+ * da ideia de uma célula no tabuleiro.
+ */
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Cell
-{
-    public enum OperationType
-    {
-        Soma,
-        Subtracao,
-        Multiplicacao,
-        Divisao,
-        Mista
+public class Cell {
+    // Operações da célula
+    public enum OperationType {
+        Addition,
+        Subtraction,
+        Multiplication,
+        Division,
+        Mixed
     }
 
-    private bool selected;
+    // Cor padrão de uma célula
+    public static Color DefaultColor = new Color (0.81f, 0.76f, 0.91f, 1f);
+    public static Color MiddleCellColor = new Color(0.31f, 0.17f, 0.65f, 1f);
+    public static Color SurroundingCellColor = new Color(0.39f, 0.12f, 1f, 1f);
 
-    private GameObject primitive;
-    private Vector3 position;
+    // Dados visuais da célula
+    private Color m_color;
+    private GameObject m_primitive;
 
-    private OperationType type;
-    private int difficulty;
-    private string question;
-    private float answer;
+    // Dados informacionais da célula
+    private bool m_isSelected;
+    private string m_question;
+    private float m_answer;
+    private int m_difficulty;
+    private OperationType m_operation;
+    private Vector3 m_position;
 
-    public Cell (GameObject primitive, Vector2 position)
-    {
-        selected = false;
+    // Construtor de célula vazia
+    public Cell (Color color, GameObject primitive, Vector3 position) {
+        m_isSelected = false;
+        m_color = color;
+        m_primitive = primitive;
 
-        this.primitive = primitive;
-        this.position = position;
+        m_question = "";
+        m_answer = 0f;
+        m_difficulty = 1;
+        m_operation = OperationType.Addition;
+
+        m_position = position;
     }
 
+    // Construtor de célula completa
+    public Cell (Color color, GameObject primitive, Vector3 position, string question, float answer, int difficulty, OperationType operation) {
+        m_isSelected = false;
+        m_color = color;
+        m_primitive = primitive;
+
+        m_question = question;
+        m_answer = answer;
+        m_difficulty = difficulty;
+        m_operation = operation;
+
+        m_position = position;
+    }
+
+    // Seta os dados informativos da célula
+    public void SetCell (string question, float answer, int difficulty, OperationType operation) {
+        m_question = question;
+        m_answer = answer;
+        m_difficulty = difficulty;
+        m_operation = operation;
+    }
+
+    // Reseta os dados informativos da célula
     public void ResetCell () {
-        type = OperationType.Soma;
-        difficulty = 0;
-        question = "";
-        answer = 0f;
+        m_isSelected = false;
+
+        m_question = "";
+        m_answer = 0f;
+        m_difficulty = 1;
+        m_operation = OperationType.Addition;
     }
 
-    public void SetCell (OperationType type, int difficulty, string question, float answer)
-    {
-        this.type = type;
-        this.difficulty = difficulty;
-        this.question = question;
-        this.answer = answer;
+    // Métodos GET/SET
+    public void SetStatus (bool status) {
+        m_isSelected = status;
     }
 
-    public void SetCellStatus (bool status)
-    {
-        selected = status;
+    public bool GetStatus () {
+        return m_isSelected;
     }
 
-    public bool GetCellStatus ()
-    {
-        return selected;
+    public void SetColor (Color color) {
+        m_color = color;
+        m_primitive.GetComponent<Image>().color = color;
     }
 
-    public GameObject GetCellPrimitive ()
-    {
-        return primitive;
+    public Color GetColor () {
+        return m_color;
     }
 
-    public Vector3 GetCellPosition ()
-    {
-        return position;
+    public GameObject GetPrimitive () {
+        return m_primitive;
     }
 
-    public OperationType GetCellType ()
-    {
-        return type;
+    public string GetQuestion () {
+        return m_question;
     }
 
-    public int GetDifficulty ()
-    {
-        return difficulty;
+    public float GetAnswer () {
+        return m_answer;
     }
 
-    public string GetCellQuestion ()
-    {
-        return question;
+    public int GetDifficulty () {
+        return m_difficulty;
     }
 
-    public float GetCellAnswer ()
-    {
-        return answer;
+    public OperationType GetOperationType () {
+        return m_operation;
     }
 
-    public int GetCellDifficulty ()
-    {
-        return difficulty;
+    public Vector3 GetPosition () {
+        return m_position;
     }
 }

@@ -26,20 +26,25 @@ public class MenuManager : MonoBehaviour {
         telaPergunta.SetActive(false);
         telaLogin.SetActive(true);
     }
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
 
     public void Jogar()
     {
-        //StartCoroutine(CarregaScene("Jogo"));
+        StartCoroutine(CarregaScene("StudentModule"));
     }
 
     public void CriarFase()
     {
-        StartCoroutine(CarregaScene("Main"));
+        StartCoroutine(CarregaScene("ProfessorModule"));
     }
 
     public void Estatisticas()
     {
-        //StartCoroutine(CarregaScene("Estatisticas"));
+        StartCoroutine(CarregaScene("Estatisticas"));
     }
 
     IEnumerator CarregaScene(string nome)
